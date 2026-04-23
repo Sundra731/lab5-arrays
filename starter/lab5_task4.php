@@ -6,11 +6,11 @@
  * IMPORTANT: Pseudocode AND flowchart required in PDF report
  * before writing code.
  *
- * @author     [Your Full Name]
- * @student    [Your Reg Number, e.g. SCT212-XXXX/2024]
+ * @author     [SUNDRA EVANS]
+ * @student    [ENE212-0148/2023]
  * @lab        Lab 5 of 14
  * @unit       ICS 2371
- * @date       [Date completed]
+ * @date       [23/04/2026]
  */
 
 // ── Scenario: Bridge Load Sensor Analysis ────────────────────
@@ -29,8 +29,45 @@ $max_safe_load   = 18.0; // tonnes — safety threshold
 //   $min    — lowest reading + which sensor
 //   $total  — sum of all readings
 
-// TODO: Step 1 — your code here
+$sensor_readings = [12.4, 8.7, 15.2, 19.8, 7.3, 14.6, 11.9, 16.3];
+$sensor_labels   = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"];
+$max_safe_load   = 18.0;
 
+// Initialize variables using the first element of the array
+$total = 0;
+$max = $sensor_readings[0];
+$max_sensor = $sensor_labels[0];
+$min = $sensor_readings[0];
+$min_sensor = $sensor_labels[0];
+
+// Loop through the data
+foreach ($sensor_readings as $index => $reading) {
+    // Calculate Total
+    $total += $reading;
+
+    // Determine Max
+    if ($reading > $max) {
+        $max = $reading;
+        $max_sensor = $sensor_labels[$index];
+    }
+
+    // Determine Min
+    if ($reading < $min) {
+        $min = $reading;
+        $min_sensor = $sensor_labels[$index];
+    }
+}
+
+// Calculate Mean (Average)
+$count = count($sensor_readings);
+$mean = round($total / $count, 2);
+
+// Output Results
+echo "--- Bridge Load Analysis ---<br>";
+echo "Total Load:    " . $total . " tonnes<br>";
+echo "Mean Load:     " . $mean . " tonnes<br>";
+echo "Max Reading:   " . $max . " tonnes (Sensor: " . $max_sensor . ")<br>";
+echo "Min Reading:   " . $min . " tonnes (Sensor: " . $min_sensor . ")<br>";
 
 // ── STEP 2: Above-average count ──────────────────────────────
 // Count how many sensors recorded ABOVE the mean.
@@ -38,7 +75,23 @@ $max_safe_load   = 18.0; // tonnes — safety threshold
 // Print: "X of 8 sensors recorded above-average load"
 // Print the list of those sensor labels.
 
-// TODO: Step 2 — your code here
+$above_avg = [];
+
+// Loop to find sensors exceeding the average
+foreach ($sensor_readings as $index => $reading) {
+    if ($reading > $mean) {
+        $above_avg[] = $sensor_labels[$index];
+    }
+}
+
+// Result counts
+$above_avg_count = count($above_avg);
+$total_sensors = count($sensor_readings);
+
+// Output Results
+echo "--- Step 2: Above-Average Analysis ---<br>";
+echo "{$above_avg_count} of {$total_sensors} sensors recorded above-average load.<br>";
+echo "Sensors: " . implode(", ", $above_avg) . "<br>";
 
 
 // ── STEP 3: Safety threshold check ───────────────────────────
@@ -50,8 +103,22 @@ $max_safe_load   = 18.0; // tonnes — safety threshold
 //   S1     | 12.4t   | SAFE
 //   S4     | 19.8t   | UNSAFE  ← flag clearly
 
-// TODO: Step 3 — your code here
+echo str_pad("Sensor", 8) . " | " . str_pad("Reading", 8) . " | Status<br>";
+echo str_repeat("-", 30) . "<br>";
 
+foreach ($sensor_readings as $index => $reading) {
+    $label = $sensor_labels[$index];
+    
+    // Determine safety status
+    if ($reading > $max_safe_load) {
+        $status = "UNSAFE  ← flag clearly";
+    } else {
+        $status = "SAFE";
+    }
+
+    // Print formatted row
+    echo str_pad($label, 8) . " | " . str_pad($reading . "t", 8) . " | " . $status . "<br>";
+}
 
 // ── STEP 4: Sorted safety report ─────────────────────────────
 // Sort the sensor readings in DESCENDING order using your
@@ -60,7 +127,40 @@ $max_safe_load   = 18.0; // tonnes — safety threshold
 // Note: you must track which label belongs to which reading
 // as you sort — use a parallel array technique.
 
-// TODO: Step 4 — your code here
+$sensor_readings = [12.4, 8.7, 15.2, 19.8, 7.3, 14.6, 11.9, 16.3];
+$sensor_labels   = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"];
+$n = count($sensor_readings);
+
+// --- Bubble Sort Implementation (Descending Order) ---
+// We iterate through the array and swap adjacent elements if they are 
+// out of order. Parallel swapping ensures S4 stays with 19.8.
+for ($i = 0; $i < $n - 1; $i++) {
+    for ($j = 0; $j < $n - $i - 1; $j++) {
+        // Compare current reading with the next one
+        if ($sensor_readings[$j] < $sensor_readings[$j + 1]) {
+            
+            // Swap values in the readings array
+            $temp_val = $sensor_readings[$j];
+            $sensor_readings[$j] = $sensor_readings[$j + 1];
+            $sensor_readings[$j + 1] = $temp_val;
+
+            // Swap values in the labels array (Parallel Tracking)
+            $temp_label = $sensor_labels[$j];
+            $sensor_labels[$j] = $sensor_labels[$j + 1];
+            $sensor_labels[$j + 1] = $temp_label;
+        }
+    }
+}
+
+// --- Output Sorted Results ---
+echo "--- Step 4: Sorted Safety Report (Highest Load First) ---<br>";
+echo str_pad("Rank", 6) . "| " . str_pad("Sensor", 8) . "| Reading<br>";
+echo str_repeat("-", 30) . "<br>";
+
+foreach ($sensor_readings as $index => $reading) {
+    $rank = $index + 1;
+    echo str_pad($rank, 6) . "| " . str_pad($sensor_labels[$index], 8) . "| {$reading}t\n";
+}
 
 
 // ── Required Test Data Sets — screenshot each ────────────────
